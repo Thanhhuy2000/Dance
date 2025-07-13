@@ -1,17 +1,22 @@
 package model;
 
 public class BalletDancer extends Dancer {
-    private double grace; // 0-1
 
-    public BalletDancer(String id, String name, int energy, double grace) {
-        super(id, name, energy, DanceStyle.BALLET);
-        this.grace = grace;
+    public BalletDancer(String id, String name, int energy, int power, double grace, int emotion) {
+        super(id, name, energy, DanceStyle.BALLET, power, grace, emotion);
     }
 
     @Override
     public void performDance(CompetitionState state, Performance performance) {
-        // Tăng điểm nghệ thuật dựa trên grace
-        performance.setArtisticScore(performance.getArtisticScore() + (int)(grace * 100));
+        // Công thức tính điểm cho Ballet: grace ảnh hưởng mạnh nhất
+        int technicalBonus = (int)(grace * 40) + power * 4 + emotion * 2;
+        int artisticBonus = (int)(grace * 50) + power * 2 + emotion * 4;
+        int emotionalBonus = emotion * 6 + (int)(grace * 20) + power * 2;
+        
+        performance.setTechnicalScore(performance.getTechnicalScore() + technicalBonus);
+        performance.setArtisticScore(performance.getArtisticScore() + artisticBonus);
+        performance.setEmotionalScore(performance.getEmotionalScore() + emotionalBonus);
+        
         this.energy -= 20;
     }
 
@@ -19,6 +24,4 @@ public class BalletDancer extends Dancer {
     public boolean canPerform() {
         return energy > 0;
     }
-
-    public double getGrace() { return grace; }
-}
+} 

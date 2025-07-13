@@ -1,0 +1,131 @@
+@startuml
+' Khai báo các lớp chính
+
+class Main {
+    +main(String[] args): void
+}
+
+class CompetitionController {
+    -CompetitionState state
+    -Scanner scanner
+    +startCompetition(): void
+    -createTeamFromInput(name: String): Team
+    -createDancerFromInput(index: int): Dancer
+    -playRound(team: Team): void
+    -selectDancers(team: Team): List<Dancer>
+    -showMenu(): void
+    -printTeams(): void
+    -printTeamScores(): void
+    -printFinalResults(): void
+    -printTopDancer(teams: List<Team>): void
+}
+
+class CompetitionState {
+    -teams: List<Team>
+    -currentRound: int
+    -actionLog: List<String>
+    +isFinished(): boolean
+    +nextRound(): void
+    +logAction(action: String): void
+    +getTeams(): List<Team>
+    +getCurrentRound(): int
+    +getActionLog(): List<String>
+}
+
+class Team {
+    -name: String
+    -dancers: List<Dancer>
+    -performances: List<Performance>
+    -totalScore: double
+    +addDancer(dancer: Dancer): void
+    +addPerformance(perf: Performance): void
+    +getName(): String
+    +getDancers(): List<Dancer>
+    +getPerformances(): List<Performance>
+    +getTotalScore(): double
+}
+
+abstract class Dancer {
+    -id: String
+    -name: String
+    -energy: int
+    -style: DanceStyle
+    -totalScore: double
+    -power: int
+    -grace: double
+    -emotion: int
+    +performDance(state: CompetitionState, perf: Performance): void
+    +canPerform(): boolean
+    +rest(): void
+    +getId(): String
+    +getName(): String
+    +getEnergy(): int
+    +getStyle(): DanceStyle
+    +setEnergy(int): void
+    +getTotalScore(): double
+    +addScore(score: double): void
+    +getPower(): int
+    +getGrace(): double
+    +getEmotion(): int
+}
+
+class HipHopDancer {
+    +performDance(state, perf): void
+    +canPerform(): boolean
+}
+class BalletDancer {
+    +performDance(state, perf): void
+    +canPerform(): boolean
+}
+class ContemporaryDancer {
+    +performDance(state, perf): void
+    +canPerform(): boolean
+}
+
+class Performance {
+    -name: String
+    -technicalScore: int
+    -artisticScore: int
+    -emotionalScore: int
+    +calculateScore(): double
+    +isCompleted(): boolean
+    +getName(): String
+    +getTechnicalScore(): int
+    +getArtisticScore(): int
+    +getEmotionalScore(): int
+    +setTechnicalScore(int): void
+    +setArtisticScore(int): void
+    +setEmotionalScore(int): void
+}
+
+class DanceStyle {
+    <<enumeration>>
+    HIP_HOP
+    BALLET
+    CONTEMPORARY
+}
+
+class InvalidDancerException {
+    +InvalidDancerException(msg: String)
+}
+
+' Kế thừa
+HipHopDancer --|> Dancer
+BalletDancer --|> Dancer
+ContemporaryDancer --|> Dancer
+
+' Quan hệ sử dụng & thành phần
+Main --> CompetitionController
+CompetitionController --> CompetitionState
+CompetitionController --> Team
+CompetitionController --> Dancer
+CompetitionController --> InvalidDancerException
+
+CompetitionState --> Team
+Team --> Dancer
+Team --> Performance
+Dancer --> Performance
+Dancer --> CompetitionState
+Dancer --> DanceStyle
+
+@enduml

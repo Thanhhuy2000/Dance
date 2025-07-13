@@ -29,4 +29,4 @@ public class Team {
     public List<Dancer> getDancers() { return dancers; }
     public List<Performance> getPerformances() { return performances; }
     public double getTotalScore() { return totalScore; }
-}
+} 

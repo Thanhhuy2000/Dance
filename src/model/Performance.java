@@ -29,4 +29,4 @@ public class Performance {
     public void setTechnicalScore(int score) { this.technicalScore = score; }
     public void setArtisticScore(int score) { this.artisticScore = score; }
     public void setEmotionalScore(int score) { this.emotionalScore = score; }
-}
+} 

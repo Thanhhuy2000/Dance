@@ -1,14 +1,13 @@
 package controller;
 
+import java.util.*;
+import model.BalletDancer;
+import model.CompetitionState;
+import model.ContemporaryDancer;
 import model.Dancer;
 import model.HipHopDancer;
-import model.BalletDancer;
-import model.ContemporaryDancer;
 import model.Performance;
 import model.Team;
-import model.CompetitionState;
-import exception.InvalidDancerException;
-import java.util.*;
 
 public class CompetitionController {
     private CompetitionState state;
@@ -32,7 +31,7 @@ public class CompetitionController {
             showMenu();
         }
         System.out.println("\n=== Kết thúc cuộc thi! ===");
-        printResult();
+        printFinalResults();
         printTopDancer(state.getTeams());
     }
 
@@ -84,23 +83,24 @@ public class CompetitionController {
         String name = scanner.nextLine();
         System.out.print("Chọn phong cách (1: HipHop, 2: Ballet, 3: Contemporary): ");
         int style = Integer.parseInt(scanner.nextLine());
+        System.out.print("Nhập power (0-10): ");
+        int power = Integer.parseInt(scanner.nextLine());
+        System.out.print("Nhập grace (0-1, vd: 0.8): ");
+        double grace = Double.parseDouble(scanner.nextLine());
+        System.out.print("Nhập emotion (0-10): ");
+        int emotion = Integer.parseInt(scanner.nextLine());
         int energy = 100;
+        
         switch (style) {
             case 1:
-                System.out.print("Nhập power (0-10): ");
-                int power = Integer.parseInt(scanner.nextLine());
-                return new HipHopDancer(UUID.randomUUID().toString(), name, energy, power);
+                return new HipHopDancer(UUID.randomUUID().toString(), name, energy, power, grace, emotion);
             case 2:
-                System.out.print("Nhập grace (0-1, vd: 0.8): ");
-                double grace = Double.parseDouble(scanner.nextLine());
-                return new BalletDancer(UUID.randomUUID().toString(), name, energy, grace);
+                return new BalletDancer(UUID.randomUUID().toString(), name, energy, power, grace, emotion);
             case 3:
-                System.out.print("Nhập emotion (0-10): ");
-                int emotion = Integer.parseInt(scanner.nextLine());
-                return new ContemporaryDancer(UUID.randomUUID().toString(), name, energy, emotion);
+                return new ContemporaryDancer(UUID.randomUUID().toString(), name, energy, power, grace, emotion);
             default:
                 System.out.println("Chọn sai, mặc định HipHop!");
-                return new HipHopDancer(UUID.randomUUID().toString(), name, energy, 5);
+                return new HipHopDancer(UUID.randomUUID().toString(), name, energy, 5, 0.5, 5);
         }
     }
 
@@ -154,28 +154,34 @@ public class CompetitionController {
         return selected;
     }
 
-    private void printResult() {
-        System.out.println("Điểm các đội:");
-        for (Team team : state.getTeams()) {
-            System.out.println("- " + team.getName() + ": " + team.getTotalScore());
+    private void printFinalResults() {
+        List<Team> teams = state.getTeams();
+        // Sắp xếp các đội theo điểm từ cao đến thấp
+        teams.sort((t1, t2) -> Double.compare(t2.getTotalScore(), t1.getTotalScore()));
+        
+        System.out.println("=== BẢNG XẾP HẠNG CUỐI CÙNG ===");
+        for (int i = 0; i < teams.size(); i++) {
+            Team team = teams.get(i);
+            System.out.println((i+1) + ". " + team.getName() + ": " + team.getTotalScore() + " điểm");
         }
-        double max = -1;
-        List<Team> winners = new ArrayList<>();
-        for (Team team : state.getTeams()) {
-            if (team.getTotalScore() > max) {
-                max = team.getTotalScore();
-                winners.clear();
-                winners.add(team);
-            } else if (team.getTotalScore() == max) {
-                winners.add(team);
+        
+        // Xác định đội thắng
+        if (teams.size() > 0) {
+            double maxScore = teams.get(0).getTotalScore();
+            List<Team> winners = new ArrayList<>();
+            for (Team team : teams) {
+                if (team.getTotalScore() == maxScore) {
+                    winners.add(team);
+                }
             }
-        }
-        if (winners.size() == 1) {
-            System.out.println("Đội chiến thắng: " + winners.get(0).getName());
-        } else {
-            System.out.print("Các đội hòa: ");
-            for (Team t : winners) System.out.print(t.getName() + " ");
-            System.out.println();
+            
+            if (winners.size() == 1) {
+                System.out.println("\n🏆 Đội chiến thắng: " + winners.get(0).getName());
+            } else {
+                System.out.print("\n🏆 Các đội hòa: ");
+                for (Team t : winners) System.out.print(t.getName() + " ");
+                System.out.println();
+            }
         }
     }
 
@@ -186,6 +192,6 @@ public class CompetitionController {
         for (Dancer d : all) {
             if (d.getTotalScore() > top.getTotalScore()) top = d;
         }
-        System.out.println("\nVũ công có tổng điểm cao nhất: " + top.getName() + " (" + top.getStyle() + ") với " + top.getTotalScore() + " điểm.");
+        System.out.println("\n👑 Vũ công có tổng điểm cao nhất: " + top.getName() + " (" + top.getStyle() + ") với " + top.getTotalScore() + " điểm.");
     }
-}
+} 

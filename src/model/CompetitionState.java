@@ -30,4 +30,4 @@ public class CompetitionState {
     public int getCurrentRound() { return currentRound; }
     public List<Team> getTeams() { return teams; }
     public List<String> getActionLog() { return actionLog; }
-}
+} 
